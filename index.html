@@ -288,13 +288,14 @@ function enviarFormulario(){
   btn.textContent='Generando...';
   document.getElementById('errorMsg').style.display='none';
 
-  fetch(WEBAPP_URL, {
-    method:'POST',
-    body: JSON.stringify(datos)
-  })
-  .then(function(res){return res.json();})
-  .then(function(data){
-    if(data.ok){
+  // Usar script tag para evitar CORS
+  var callbackName = 'cb_' + Date.now();
+  var script = document.createElement('script');
+  
+  window[callbackName] = function(data) {
+    delete window[callbackName];
+    document.body.removeChild(script);
+    if(data && data.ok){
       document.getElementById('successMsg').style.display='block';
       document.getElementById('linkDoc').href=data.url;
       btn.textContent='¡Reserva generada!';
@@ -303,12 +304,18 @@ function enviarFormulario(){
       btn.disabled=false;
       btn.textContent='Generar reserva en Drive';
     }
-  })
-  .catch(function(){
+  };
+
+  // Enviamos datos via parámetro GET codificado
+  var encoded = encodeURIComponent(JSON.stringify(datos));
+  script.src = WEBAPP_URL + '?callback=' + callbackName + '&datos=' + encoded;
+  script.onerror = function(){
+    delete window[callbackName];
     document.getElementById('errorMsg').style.display='block';
     btn.disabled=false;
     btn.textContent='Generar reserva en Drive';
-  });
+  };
+  document.body.appendChild(script);
 }
 </script>
 </body>
