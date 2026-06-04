@@ -1,322 +1,110 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reserva de Compra - Cocuzza Propiedades</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f5f5f5;color:#222;padding:1rem}
-.container{max-width:700px;margin:0 auto;background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-h1{font-size:18px;font-weight:700;margin-bottom:4px}
-.subtitle{font-size:13px;color:#888;margin-bottom:1.5rem}
-.section{margin-bottom:1.5rem}
-.section-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid #eee}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.full{grid-column:1/-1}
-.field{display:flex;flex-direction:column;gap:4px}
-.field label{font-size:12px;color:#666;font-weight:500}
-.field input,.field select,.field textarea{width:100%;padding:8px 10px;font-size:14px;border:1px solid #ddd;border-radius:8px;background:#fff;outline:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:#222}
-.field .letras{font-size:12px;color:#666;padding:6px 10px;background:#f9f9f9;border-radius:8px;min-height:30px;border:1px dashed #ddd;font-style:italic}
-.field input.calculated{background:#f9f9f9;color:#444;border-style:dashed}
-.btn-submit{width:100%;padding:14px;font-size:15px;font-weight:700;background:#111;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:1rem}
-.btn-submit:hover{background:#333}
-.btn-submit:disabled{background:#999;cursor:not-allowed}
-.success{display:none;padding:1rem;background:#e6f9f0;border:1px solid #34c77b;border-radius:8px;color:#1a7a47;font-size:14px;text-align:center;margin-top:1rem}
-.success a{color:#1a7a47;font-weight:700}
-.error-msg{display:none;padding:1rem;background:#fde8e8;border:1px solid #e74c3c;border-radius:8px;color:#c0392b;font-size:14px;margin-top:1rem}
-@media(max-width:500px){.grid2{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>Reserva de Compra</h1>
-  <div class="subtitle">Cocuzza Propiedades · Merlo, Buenos Aires</div>
-
-  <div class="section">
-    <div class="section-title">Datos del comprador</div>
-    <div class="grid2">
-      <div class="field full"><label>Nombre completo *</label><input type="text" id="nombre" placeholder="García Juan Carlos"></div>
-      <div class="field"><label>DNI *</label><input type="text" id="dni" placeholder="28456789"></div>
-      <div class="field"><label>Celular *</label><input type="tel" id="celular" placeholder="11 1234-5678"></div>
-      <div class="field"><label>Email</label><input type="email" id="email" placeholder="ejemplo@gmail.com"></div>
-      <div class="field"><label>Ciudad/Partido *</label><input type="text" id="ciudadComp" placeholder="Merlo"></div>
-      <div class="field full"><label>Domicilio *</label><input type="text" id="domicilio" placeholder="San Martín 1250"></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Datos del inmueble</div>
-    <div class="grid2">
-      <div class="field"><label>Calle y número *</label><input type="text" id="calleInmueble" placeholder="Belgrano 450"></div>
-      <div class="field"><label>Entre calles *</label><input type="text" id="entreCalles" placeholder="Rivadavia y Mitre"></div>
-      <div class="field"><label>Barrio</label><input type="text" id="barrio" placeholder="Centro"></div>
-      <div class="field"><label>Ciudad/Partido *</label><input type="text" id="ciudadInmueble" placeholder="Merlo"></div>
-      <div class="field full"><label>Descripción adicional</label><textarea id="descripcion" rows="2" placeholder="Casa, terreno, PH - medidas y características"></textarea></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Datos económicos</div>
-    <div class="grid2">
-      <div class="field">
-        <label>Moneda *</label>
-        <select id="moneda">
-          <option value="$">Pesos ($)</option>
-          <option value="u$s">Dólares (u$s)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Precio total de la operación *</label>
-        <input type="number" id="precioTotal" placeholder="25000000">
-        <span class="letras" id="precioTotalLetras">—</span>
-      </div>
-      <div class="field">
-        <label>Monto de la reserva *</label>
-        <input type="number" id="montoReserva" placeholder="500000">
-        <span class="letras" id="montoReservaLetras">—</span>
-      </div>
-      <div class="field">
-        <label>Monto a la firma del boleto *</label>
-        <input type="number" id="montoBoleto" placeholder="5000000">
-        <span class="letras" id="montoBoletoLetras">—</span>
-      </div>
-      <div class="field full">
-        <label>Forma de pago del saldo *</label>
-        <input type="text" id="formaPago" placeholder="el saldo al momento de la escrituración">
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Honorarios y gastos</div>
-    <div class="grid2">
-      <div class="field">
-        <label>% Honorarios</label>
-        <select id="pctHonorarios">
-          <option value="3">3%</option>
-          <option value="3.5">3.5%</option>
-          <option value="4" selected>4%</option>
-          <option value="custom">Otro %</option>
-        </select>
-      </div>
-      <div class="field" id="customPctField" style="display:none">
-        <label>% personalizado</label>
-        <input type="number" id="customPct" placeholder="Ej: 2.5" step="0.5">
-      </div>
-      <div class="field">
-        <label>Honorarios calculados</label>
-        <input type="text" id="honorariosCalc" class="calculated" readonly>
-      </div>
-      <div class="field">
-        <label>Sellados/Certificaciones</label>
-        <input type="number" id="sellados" placeholder="0">
-      </div>
-      <div class="field">
-        <label>Informes</label>
-        <input type="number" id="informes" placeholder="0">
-      </div>
-      <div class="field">
-        <label>Otros gastos</label>
-        <input type="number" id="otros" placeholder="0">
-      </div>
-      <div class="field">
-        <label>Total gastos</label>
-        <input type="text" id="totalGastos" class="calculated" readonly>
-      </div>
-      <div class="field">
-        <label>Recibido (reserva)</label>
-        <input type="text" id="recibidoCalc" class="calculated" readonly>
-      </div>
-      <div class="field">
-        <label>Saldo honorarios</label>
-        <input type="text" id="saldoCalc" class="calculated" readonly>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn-submit" id="btnEnviar" onclick="enviarFormulario()">Generar reserva en Drive</button>
-  <div class="success" id="successMsg">
-    ✅ ¡Reserva generada correctamente!<br>
-    <a id="linkDoc" href="#" target="_blank">Abrir documento en Drive →</a>
-  </div>
-  <div class="error-msg" id="errorMsg">❌ Hubo un error. Intentá de nuevo.</div>
-</div>
-
-<script>
-var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzW4LE_1zTtogR1cfkdXFQ_3GaA_dYAmyfvAdS3QEZPfjAxuegXaoHCd0q0zesJ39CU/exec';
-
-var UNIDADES = ['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve'];
-var DECENAS = ['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
-var CENTENAS = ['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
-
-function cientos(n){
-  if(n===100) return 'cien';
-  var r='';
-  r+=CENTENAS[Math.floor(n/100)];
-  var dec=n%100;
-  if(dec>0){
-    if(r) r+=' ';
-    if(dec<20) r+=UNIDADES[dec];
-    else{
-      r+=DECENAS[Math.floor(dec/10)];
-      var uni=dec%10;
-      if(uni>0) r+=' y '+UNIDADES[uni];
+function doGet(e) {
+  try {
+    var callback = e.parameter.callback;
+    var datosStr = e.parameter.datos;
+    
+    if (datosStr) {
+      var datos = JSON.parse(decodeURIComponent(datosStr));
+      var url = generarDocumento(datos);
+      var response = JSON.stringify({ok: true, url: url});
+      if (callback) {
+        return ContentService
+          .createTextOutput(callback + '(' + response + ')')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      return ContentService
+        .createTextOutput(response)
+        .setMimeType(ContentService.MimeType.JSON);
     }
-  }
-  return r;
-}
-
-function numeroALetras(n){
-  if(!n||isNaN(n)||n<=0) return '';
-  n=Math.round(n);
-  if(n===0) return 'cero';
-  var resultado='';
-  var millones=Math.floor(n/1000000);
-  var miles=Math.floor((n%1000000)/1000);
-  var resto=n%1000;
-  if(millones>0){
-    if(millones===1) resultado+='un millón';
-    else resultado+=cientos(millones)+' millones';
-  }
-  if(miles>0){
-    if(resultado) resultado+=' ';
-    if(miles===1) resultado+='mil';
-    else resultado+=cientos(miles)+' mil';
-  }
-  if(resto>0){
-    if(resultado) resultado+=' ';
-    resultado+=cientos(resto);
-  }
-  return resultado.charAt(0).toUpperCase()+resultado.slice(1);
-}
-
-function formatNum(n){
-  if(!n) return '';
-  return new Intl.NumberFormat('es-AR').format(Math.round(n));
-}
-
-function calcular(){
-  var precio=parseFloat(document.getElementById('precioTotal').value)||0;
-  var reserva=parseFloat(document.getElementById('montoReserva').value)||0;
-  var boleto=parseFloat(document.getElementById('montoBoleto').value)||0;
-  var moneda=document.getElementById('moneda').value;
-  var pctSel=document.getElementById('pctHonorarios').value;
-  var pct=pctSel==='custom'?(parseFloat(document.getElementById('customPct').value)||0):parseFloat(pctSel);
-  var sellados=parseFloat(document.getElementById('sellados').value)||0;
-  var informes=parseFloat(document.getElementById('informes').value)||0;
-  var otros=parseFloat(document.getElementById('otros').value)||0;
-
-  document.getElementById('precioTotalLetras').textContent=numeroALetras(precio)||'—';
-  document.getElementById('montoReservaLetras').textContent=numeroALetras(reserva)||'—';
-  document.getElementById('montoBoletoLetras').textContent=numeroALetras(boleto)||'—';
-
-  var honorarios=precio*(pct/100);
-  var totalGastos=honorarios+sellados+informes+otros;
-  var saldo=totalGastos-reserva;
-
-  document.getElementById('honorariosCalc').value=honorarios?(moneda+' '+formatNum(honorarios)):'';
-  document.getElementById('totalGastos').value=totalGastos?(moneda+' '+formatNum(totalGastos)):'';
-  document.getElementById('recibidoCalc').value=reserva?(moneda+' '+formatNum(reserva)):'';
-  document.getElementById('saldoCalc').value=saldo>0?(moneda+' '+formatNum(saldo)):'';
-}
-
-document.getElementById('pctHonorarios').addEventListener('change',function(){
-  document.getElementById('customPctField').style.display=this.value==='custom'?'flex':'none';
-  calcular();
-});
-
-['precioTotal','montoReserva','montoBoleto','moneda','customPct','sellados','informes','otros'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el) el.addEventListener('input',calcular);
-});
-
-function enviarFormulario(){
-  var nombre=document.getElementById('nombre').value.trim();
-  var precio=parseFloat(document.getElementById('precioTotal').value)||0;
-  var moneda=document.getElementById('moneda').value;
-
-  if(!nombre||!precio){
-    alert('Completá al menos el nombre del comprador y el precio total.');
-    return;
-  }
-
-  var reservaN=parseFloat(document.getElementById('montoReserva').value)||0;
-  var boletoN=parseFloat(document.getElementById('montoBoleto').value)||0;
-  var pctSel=document.getElementById('pctHonorarios').value;
-  var pct=pctSel==='custom'?(parseFloat(document.getElementById('customPct').value)||0):parseFloat(pctSel);
-  var sellados=parseFloat(document.getElementById('sellados').value)||0;
-  var informes=parseFloat(document.getElementById('informes').value)||0;
-  var otros=parseFloat(document.getElementById('otros').value)||0;
-  var honorarios=precio*(pct/100);
-  var totalGastos=honorarios+sellados+informes+otros;
-  var saldo=totalGastos-reservaN;
-
-  var datos={
-    nombre: nombre,
-    dni: document.getElementById('dni').value,
-    celular: document.getElementById('celular').value,
-    email: document.getElementById('email').value,
-    domicilio: document.getElementById('domicilio').value,
-    ciudadComp: document.getElementById('ciudadComp').value,
-    calleInmueble: document.getElementById('calleInmueble').value,
-    entreCalles: document.getElementById('entreCalles').value,
-    barrio: document.getElementById('barrio').value||'Centro',
-    ciudadInmueble: document.getElementById('ciudadInmueble').value,
-    descripcion: document.getElementById('descripcion').value,
-    simbolo: moneda,
-    montoReservaNum: formatNum(reservaN),
-    montoReservaLetras: numeroALetras(reservaN),
-    precioTotalNum: formatNum(precio),
-    precioTotalLetras: numeroALetras(precio),
-    montoBoletoNum: formatNum(boletoN),
-    montoBoletoLetras: numeroALetras(boletoN),
-    formaPago: document.getElementById('formaPago').value,
-    totalContado: formatNum(precio),
-    honorarios: formatNum(honorarios),
-    sellados: sellados?formatNum(sellados):'-',
-    informes: informes?formatNum(informes):'-',
-    otros: otros?formatNum(otros):'-',
-    total: formatNum(totalGastos),
-    recibido: formatNum(reservaN),
-    saldo: saldo>0?formatNum(saldo):'-'
-  };
-
-  var btn=document.getElementById('btnEnviar');
-  btn.disabled=true;
-  btn.textContent='Generando...';
-  document.getElementById('errorMsg').style.display='none';
-
-  // Usar script tag para evitar CORS
-  var callbackName = 'cb_' + Date.now();
-  var script = document.createElement('script');
-  
-  window[callbackName] = function(data) {
-    delete window[callbackName];
-    document.body.removeChild(script);
-    if(data && data.ok){
-      document.getElementById('successMsg').style.display='block';
-      document.getElementById('linkDoc').href=data.url;
-      btn.textContent='¡Reserva generada!';
-    } else {
-      document.getElementById('errorMsg').style.display='block';
-      btn.disabled=false;
-      btn.textContent='Generar reserva en Drive';
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ok: true, mensaje: 'Web App Cocuzza activa'}))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch(err) {
+    var errResponse = JSON.stringify({ok: false, error: err.toString()});
+    var cb = e.parameter.callback;
+    if (cb) {
+      return ContentService
+        .createTextOutput(cb + '(' + errResponse + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
     }
+    return ContentService
+      .createTextOutput(errResponse)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    var datos = JSON.parse(e.postData.contents);
+    var url = generarDocumento(datos);
+    return ContentService
+      .createTextOutput(JSON.stringify({ok: true, url: url}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ok: false, error: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function generarDocumento(d) {
+  var hoy = new Date();
+  var dia = hoy.getDate();
+  var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var mes = meses[hoy.getMonth()];
+  var anio = hoy.getFullYear();
+  var fechaLarga = dia + ' días del mes de ' + mes + ' de ' + anio;
+  var fechaCorta = dia + ' de ' + mes + ' de ' + anio;
+
+  var carpeta = DriveApp.getFolderById(FOLDER_ID);
+  var template = DriveApp.getFileById(TEMPLATE_ID);
+  var nombreArchivo = 'Reserva_' +
+    (d.nombre || 'SinNombre').replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'').trim().replace(/\s+/g,'_') +
+    '_' + dia + mes.substring(0,3) + anio;
+
+  var newFile = template.makeCopy(nombreArchivo, carpeta);
+  var doc = DocumentApp.openById(newFile.getId());
+  var body = doc.getBody();
+
+  var vars = {
+    '{{FECHA}}':             fechaLarga,
+    '{{FECHA_CORTA}}':       fechaCorta,
+    '{{NOMBRE_COMPRADOR}}':  d.nombre || '',
+    '{{DNI}}':               d.dni || '',
+    '{{CELULAR}}':           d.celular || '',
+    '{{EMAIL}}':             d.email || '',
+    '{{DOMICILIO_COMPRADOR}}': d.domicilio || '',
+    '{{CIUDAD_COMPRADOR}}':  d.ciudadComp || '',
+    '{{MONTO_LETRAS}}':      d.montoReservaLetras || '',
+    '{{SIMBOLO}}':           d.simbolo || '$',
+    '{{MONTO_NUMEROS}}':     d.montoReservaNum || '',
+    '{{CALLE_INMUEBLE}}':    d.calleInmueble || '',
+    '{{ENTRE_CALLES}}':      d.entreCalles || '',
+    '{{BARRIO}}':            d.barrio || 'Centro',
+    '{{CIUDAD_INMUEBLE}}':   d.ciudadInmueble || '',
+    '{{DESCRIPCION}}':       d.descripcion || '',
+    '{{PRECIO_LETRAS}}':     d.precioTotalLetras || '',
+    '{{PRECIO_NUMEROS}}':    d.precioTotalNum || '',
+    '{{BOLETO_LETRAS}}':     d.montoBoletoLetras || '',
+    '{{BOLETO_NUMEROS}}':    d.montoBoletoNum || '',
+    '{{FORMA_PAGO}}':        d.formaPago || '',
+    '{{TOTAL_CONTADO}}':     d.totalContado || '-',
+    '{{HONORARIOS}}':        d.honorarios || '-',
+    '{{SELLADOS}}':          d.sellados || '-',
+    '{{INFORMES}}':          d.informes || '-',
+    '{{OTROS}}':             d.otros || '-',
+    '{{TOTAL}}':             d.total || '-',
+    '{{RECIBIDO}}':          d.recibido || '-',
+    '{{SALDO}}':             d.saldo || '-'
   };
 
-  // Enviamos datos via parámetro GET codificado
-  var encoded = encodeURIComponent(JSON.stringify(datos));
-  script.src = WEBAPP_URL + '?callback=' + callbackName + '&datos=' + encoded;
-  script.onerror = function(){
-    delete window[callbackName];
-    document.getElementById('errorMsg').style.display='block';
-    btn.disabled=false;
-    btn.textContent='Generar reserva en Drive';
-  };
-  document.body.appendChild(script);
+  for (var key in vars) {
+    body.replaceText(key, vars[key]);
+  }
+
+  doc.saveAndClose();
+  Logger.log('Reserva generada: ' + newFile.getUrl());
+  return newFile.getUrl();
 }
-</script>
-</body>
-</html>
